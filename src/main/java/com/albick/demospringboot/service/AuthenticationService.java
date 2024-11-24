@@ -3,6 +3,7 @@ package com.albick.demospringboot.service;
 import com.albick.demospringboot.dto.LoginUserDto;
 import com.albick.demospringboot.dto.RegisterUserDto;
 import com.albick.demospringboot.entity.User;
+import com.albick.demospringboot.exception.RegistrationException;
 import com.albick.demospringboot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,13 +20,17 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    public User signup(RegisterUserDto input) {
+    public User signup(RegisterUserDto input) throws RegistrationException {
         User user = User.builder()
                 .fullName(input.getFullName())
                 .email(input.getEmail())
                 .password(passwordEncoder.encode(input.getPassword()))
                 .build();
+        boolean userExists=userRepository.findByEmail(input.getEmail()).isPresent();
 
+        if(userExists){
+            throw new RegistrationException("User already registered");
+        }
         return userRepository.save(user);
     }
 

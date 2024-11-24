@@ -4,6 +4,7 @@ import com.albick.demospringboot.controller.response.LoginResponse;
 import com.albick.demospringboot.dto.LoginUserDto;
 import com.albick.demospringboot.dto.RegisterUserDto;
 import com.albick.demospringboot.entity.User;
+import com.albick.demospringboot.exception.RegistrationException;
 import com.albick.demospringboot.service.AuthenticationService;
 import com.albick.demospringboot.service.JWTService;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,8 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
 
-    @PostMapping("/signup")
-    public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) throws RegistrationException {
         User registeredUser = authenticationService.signup(registerUserDto);
 
         return ResponseEntity.ok(registeredUser);

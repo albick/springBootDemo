@@ -18,4 +18,9 @@ public class GlobalRestExceptionHandler {
     public ResponseEntity handleRecordNotFoundException(RecordNotFoundException e) {
         return new ResponseEntity<>("Caught exception: " + e.getTableName() + " was not found by id", HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(RegistrationException.class)
+    public ResponseEntity handleRegistrationException(RegistrationException e) {
+        return new ResponseEntity<>("Caught exception: " + e.getMsg(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
