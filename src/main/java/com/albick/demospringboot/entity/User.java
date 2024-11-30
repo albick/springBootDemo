@@ -2,21 +2,25 @@ package com.albick.demospringboot.entity;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
+@Document
 @Builder
 @Data
 public class User implements UserDetails {
-
     private String id;
     private String email;
     private String fullName;
     private String password;
+
+    @DBRef
+    private Collection<WorkoutDay> workoutDays;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

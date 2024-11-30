@@ -4,11 +4,13 @@ import com.albick.demospringboot.controller.response.LoginResponse;
 import com.albick.demospringboot.dto.LoginUserDto;
 import com.albick.demospringboot.dto.RegisterUserDto;
 import com.albick.demospringboot.entity.User;
+import com.albick.demospringboot.exception.RecordNotFoundException;
 import com.albick.demospringboot.exception.RegistrationException;
 import com.albick.demospringboot.service.UserService;
 import com.albick.demospringboot.service.JWTService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +34,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
-        User authenticatedUser = userService.authenticate(loginUserDto);
+        User authenticatedUser = userService.login(loginUserDto);
 
         String jwtToken = jwtService.generateToken(authenticatedUser);
 
@@ -42,5 +44,11 @@ public class UserController {
                 .build();
 
         return ResponseEntity.ok(loginResponse);
+    }
+
+    @GetMapping("/current")
+    public ResponseEntity<User> getCurrentUser() throws RecordNotFoundException {
+        User currentUser = userService.getCurrentUser();
+        return ResponseEntity.ok(currentUser);
     }
 }
