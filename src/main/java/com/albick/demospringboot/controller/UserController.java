@@ -1,13 +1,12 @@
 package com.albick.demospringboot.controller;
 
-import com.albick.demospringboot.controller.response.LoginResponse;
+import com.albick.demospringboot.dto.LoginResponseDto;
 import com.albick.demospringboot.dto.LoginUserDto;
 import com.albick.demospringboot.dto.RegisterUserDto;
 import com.albick.demospringboot.entity.User;
 import com.albick.demospringboot.exception.RecordNotFoundException;
 import com.albick.demospringboot.exception.RegistrationException;
 import com.albick.demospringboot.service.UserService;
-import com.albick.demospringboot.service.JWTService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,34 +15,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/user")
+@RequestMapping("/users")
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-    private final JWTService jwtService;
-
     private final UserService userService;
 
 
-    @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) throws RegistrationException {
-        User registeredUser = userService.signup(registerUserDto);
+    @PostMapping("/auth/register")
+    public ResponseEntity<LoginResponseDto> register(@RequestBody RegisterUserDto registerUserDto) throws RegistrationException {
+        userService.signup(registerUserDto);
 
-        return ResponseEntity.ok(registeredUser);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
-        User authenticatedUser = userService.login(loginUserDto);
-
-        String jwtToken = jwtService.generateToken(authenticatedUser);
-
-        LoginResponse loginResponse = LoginResponse.builder()
-                .token(jwtToken)
-                .expiresIn(jwtService.getExpirationTime())
+        LoginUserDto loginUserDto = LoginUserDto.builder()
+                .email(registerUserDto.getEmail())
+                .password(registerUserDto.getPassword())
                 .build();
 
-        return ResponseEntity.ok(loginResponse);
+        LoginResponseDto loginResponseDto = userService.login(loginUserDto);
+        return ResponseEntity.ok(loginResponseDto);
+    }
+
+    @PostMapping("/auth/login")
+    public ResponseEntity<LoginResponseDto> authenticate(@RequestBody LoginUserDto loginUserDto) {
+        LoginResponseDto loginResponseDto = userService.login(loginUserDto);
+        return ResponseEntity.ok(loginResponseDto);
+    }
+
+    @PostMapping("/auth/logout")
+    public ResponseEntity<Void> logout() {
+        userService.logout();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/current")

@@ -19,9 +19,6 @@ public class User implements UserDetails {
     private String fullName;
     private String password;
 
-    @DBRef
-    private Collection<WorkoutDay> workoutDays;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
